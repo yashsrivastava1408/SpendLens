@@ -243,7 +243,7 @@ export default function SpendForm({ onSubmit, isLoading }: SpendFormProps) {
             {formData.tools.map((entry, idx) => (
               <div
                 key={entry.id}
-                className="gradient-card rounded-xl p-4 border border-border/30 space-y-4 animate-in"
+                className="gradient-card glass-hover rounded-xl p-4 border border-border/30 space-y-4 animate-in"
                 style={{ animationDelay: `${idx * 50}ms` }}
               >
                 <div className="flex items-center justify-between">
