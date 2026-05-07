@@ -1,36 +1,31 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SpendLens
 
-## Getting Started
+SpendLens is a free web app that audits a startup's AI tool spending and shows exactly where they're wasting money. It serves as a high-converting lead-generation asset for Credex, turning overspend into a case for Credex discounted credits.
 
-First, run the development server:
+## Screenshots
+![Audit Form](/public/screenshot-form.png)
+![Audit Results](/public/screenshot-results.png)
+![Shareable URL](/public/screenshot-share.png)
+
+## Quick Start
 
 ```bash
+# Install dependencies
+npm install
+
+# Run the dev server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Run tests
+npm test
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Decisions & Trade-offs
+1. **Next.js App Router**: Chosen for easy API routes and SSR for OG tags, trading off a simpler SPA setup for better SEO and shareability.
+2. **Supabase**: Chosen for instant Postgres with RLS, trading off complete database control for speed and security out-of-the-box.
+3. **Hardcoded Logic vs AI**: Kept the audit engine strictly deterministic to ensure finance-defensible results, limiting AI to just the summary paragraph.
+4. **localStorage Persistence**: Opted for client-side storage for the form to meet the "survives reload" requirement without needing a backend session.
+5. **No Email Gate**: Decided to show value first and ask for email later, trading off maximum lead capture rate for higher quality leads and trust.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Live URL
+[spendlens.vercel.app](https://spendlens.vercel.app)
