@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { motion, AnimatePresence } from "framer-motion";
 import { TOOLS, getPlansForTool, getPlanBySlug } from "@/lib/pricing-data";
 import type { ToolInput, AuditContext } from "@/lib/audit-engine";
 
@@ -180,9 +181,22 @@ export default function SpendForm({ onSubmit, isLoading }: SpendFormProps) {
     <form onSubmit={handleSubmit} id="spend-form">
       <Card className="glass border-border/50 glow-emerald">
         <CardHeader className="pb-4">
-          <CardTitle className="text-2xl font-bold flex items-center gap-3">
-            <span className="text-3xl">📊</span>
-            <span>Your AI Tool Stack</span>
+          <CardTitle className="text-2xl font-bold flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <span className="text-3xl">📊</span>
+              <span>Your AI Tool Stack</span>
+            </div>
+            {/* Step Progress */}
+            <div className="hidden sm:flex items-center gap-2">
+              {[1, 2, 3].map((step) => (
+                <div 
+                  key={step}
+                  className={`h-1.5 w-8 rounded-full transition-all duration-500 ${
+                    step === 1 ? 'bg-primary glow-sm' : 'bg-muted/30'
+                  }`}
+                />
+              ))}
+            </div>
           </CardTitle>
           <p className="text-muted-foreground text-sm mt-1">
             Add every AI tool your team uses. We&apos;ll analyze each one for savings.
@@ -240,13 +254,20 @@ export default function SpendForm({ onSubmit, isLoading }: SpendFormProps) {
 
           {/* Tool Entries */}
           <div className="space-y-4">
-            {formData.tools.map((entry, idx) => (
-              <div
-                key={entry.id}
-                className="gradient-card glass-hover rounded-xl p-4 border border-border/30 space-y-4 animate-in"
-                style={{ animationDelay: `${idx * 50}ms` }}
-              >
-                <div className="flex items-center justify-between">
+            <AnimatePresence mode="popLayout">
+              {formData.tools.map((entry, idx) => (
+                <motion.div
+                  key={entry.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.3, delay: idx * 0.05 }}
+                  className="gradient-card glass-hover rounded-xl p-4 border border-border/30 space-y-4 relative group"
+                >
+                  {/* Subtle Shimmer on Hover */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                  
+                  <div className="flex items-center justify-between relative z-10">
                   <span className="text-sm font-medium text-muted-foreground">
                     Tool {idx + 1}
                   </span>
@@ -379,9 +400,10 @@ export default function SpendForm({ onSubmit, isLoading }: SpendFormProps) {
                       className="bg-background/50 border-border/50"
                     />
                   </div>
-                </div>
-              </div>
-            ))}
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </div>
 
           {/* Add Tool + Submit */}

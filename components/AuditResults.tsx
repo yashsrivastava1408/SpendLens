@@ -4,8 +4,11 @@ import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { motion, AnimatePresence } from "framer-motion";
 import type { AuditResult, ToolAuditResult } from "@/lib/audit-engine";
 import CredexCTA from "./CredexCTA";
+import IndustryComparison from "./IndustryComparison";
+import PDFExportButton from "./PDFExportButton";
 
 interface AuditResultsProps {
   result: AuditResult;
@@ -141,6 +144,14 @@ function ToolCard({ tool }: { tool: ToolAuditResult }) {
 }
 
 export default function AuditResults({ result, aiSummary }: AuditResultsProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return <div className="space-y-6" id="audit-results-container" />;
+
   const savingsColor =
     result.savingsTier === "high"
       ? "text-gradient-savings"
@@ -151,65 +162,91 @@ export default function AuditResults({ result, aiSummary }: AuditResultsProps) {
       : "text-foreground";
 
   return (
-    <div className="space-y-6 animate-slide-up" id="audit-results">
-      {/* Hero Savings */}
-      <Card className="glass border-border/50 glow-emerald overflow-hidden">
-        <CardContent className="p-8 text-center">
-          <p className="text-sm uppercase tracking-widest text-muted-foreground mb-2">
-            Your Potential Savings
-          </p>
-          <div className="mb-2">
-            <span className={`text-5xl sm:text-6xl font-black ${savingsColor}`}>
-              <AnimatedNumber value={result.totalMonthlySavings} />
-            </span>
-            <span className="text-xl text-muted-foreground ml-2">/month</span>
-          </div>
-          <p className="text-lg text-muted-foreground">
-            <span className="font-semibold text-foreground">
-              $
-              {result.totalAnnualSavings.toLocaleString()}
-            </span>{" "}
-            per year
-          </p>
+    <div className="space-y-6" id="audit-results-container">
+      <div className="flex items-center justify-between gap-4 flex-wrap mb-2">
+        <h2 className="text-2xl font-black text-gradient-emerald">Audit Results</h2>
+        <PDFExportButton elementId="audit-results-container" filename={`spendlens-audit-${new Date().getTime()}.pdf`} />
+      </div>
 
-          <Separator className="my-6 bg-border/30" />
+      <AnimatePresence mode="wait">
+        <motion.div
+          key="hero"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          {/* Hero Savings */}
+          <Card className="glass border-border/50 glow-emerald overflow-hidden relative group">
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-transparent to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+            <CardContent className="p-8 text-center relative z-10">
+              <p className="text-sm uppercase tracking-widest text-muted-foreground mb-2">
+                Your Potential Savings
+              </p>
+              <div className="mb-2">
+                <span className={`text-5xl sm:text-6xl font-black ${savingsColor}`}>
+                  <AnimatedNumber value={result.totalMonthlySavings} />
+                </span>
+                <span className="text-xl text-muted-foreground ml-2">/month</span>
+              </div>
+              <p className="text-lg text-muted-foreground">
+                <span className="font-semibold text-foreground">
+                  $
+                  {result.totalAnnualSavings.toLocaleString()}
+                </span>{" "}
+                per year
+              </p>
 
-          <div className="grid grid-cols-3 gap-4 text-center">
-            <div>
-              <p className="text-2xl font-bold text-foreground">
-                ${result.totalCurrentMonthlySpend.toLocaleString()}
-              </p>
-              <p className="text-xs text-muted-foreground">Current Spend</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-savings-green">
-                {result.tools.filter((t) => t.monthlySavings > 0).length}
-              </p>
-              <p className="text-xs text-muted-foreground">Optimizations Found</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-credex-purple-light">
-                ~${Math.round(result.credexTotalEstimate).toLocaleString()}
-              </p>
-              <p className="text-xs text-muted-foreground">Credex Credits Savings</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+              <Separator className="my-6 bg-border/30" />
+
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div>
+                  <p className="text-2xl font-bold text-foreground">
+                    ${result.totalCurrentMonthlySpend.toLocaleString()}
+                  </p>
+                  <p className="text-xs text-muted-foreground">Current Spend</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-savings-green">
+                    {result.tools.filter((t) => t.monthlySavings > 0).length}
+                  </p>
+                  <p className="text-xs text-muted-foreground">Optimizations Found</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-credex-purple-light">
+                    ~${Math.round(result.credexTotalEstimate).toLocaleString()}
+                  </p>
+                  <p className="text-xs text-muted-foreground">Credex Credits Savings</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Benchmark Mode */}
+      {result.benchmarkData && (
+        <IndustryComparison data={result.benchmarkData} teamSize={result.teamSize || 1} />
+      )}
 
       {/* AI Summary */}
       {aiSummary && (
-        <Card className="glass border-border/50">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-lg">🤖</span>
-              <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">
-                AI-Powered Analysis
-              </h3>
-            </div>
-            <p className="text-foreground leading-relaxed">{aiSummary}</p>
-          </CardContent>
-        </Card>
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <Card className="glass border-border/50 shimmer">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-lg">🤖</span>
+                <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">
+                  AI-Powered Analysis
+                </h3>
+              </div>
+              <p className="text-foreground leading-relaxed">{aiSummary}</p>
+            </CardContent>
+          </Card>
+        </motion.div>
       )}
 
       {/* Credex CTA for high savings */}
@@ -237,17 +274,19 @@ export default function AuditResults({ result, aiSummary }: AuditResultsProps) {
 
       {/* Honest message for optimal spend */}
       {result.savingsTier === "optimal" && (
-        <Card className="glass border-emerald-glow/30">
-          <CardContent className="p-6 text-center">
-            <span className="text-4xl mb-3 block">✅</span>
-            <h3 className="text-xl font-bold mb-2">Your Spend is Optimized!</h3>
-            <p className="text-muted-foreground max-w-lg mx-auto">
-              Great news — you&apos;re already on the right plans for your team size and
-              use case. We couldn&apos;t find any meaningful optimizations. Check back as
-              your team grows or pricing changes.
-            </p>
-          </CardContent>
-        </Card>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <Card className="glass border-emerald-glow/30">
+            <CardContent className="p-6 text-center">
+              <span className="text-4xl mb-3 block">✅</span>
+              <h3 className="text-xl font-bold mb-2">Your Spend is Optimized!</h3>
+              <p className="text-muted-foreground max-w-lg mx-auto">
+                Great news — you&apos;re already on the right plans for your team size and
+                use case. We couldn&apos;t find any meaningful optimizations. Check back as
+                your team grows or pricing changes.
+              </p>
+            </CardContent>
+          </Card>
+        </motion.div>
       )}
 
       {/* Credex CTA for medium savings */}

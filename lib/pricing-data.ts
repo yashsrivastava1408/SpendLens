@@ -301,6 +301,24 @@ export const CREDEX_DISCOUNT_AVG = 0.30; // 30% average for estimates
 export const SAVINGS_TIER_HIGH = 500;    // >$500/mo
 export const SAVINGS_TIER_MEDIUM = 100;  // $100-500/mo
 
+// Industry Benchmarks (Spend per seat per month)
+export const INDUSTRY_BENCHMARKS = {
+  early_stage: 50,  // <10 people
+  series_a: 80,     // 10-50 people
+  series_b: 120,    // 50-100 people
+  enterprise: 150,  // 100+ people
+};
+
+/**
+ * Get the appropriate benchmark based on team size
+ */
+export function getBenchmarkForTeamSize(teamSize: number): number {
+  if (teamSize >= 100) return INDUSTRY_BENCHMARKS.enterprise;
+  if (teamSize >= 50) return INDUSTRY_BENCHMARKS.series_b;
+  if (teamSize >= 10) return INDUSTRY_BENCHMARKS.series_a;
+  return INDUSTRY_BENCHMARKS.early_stage;
+}
+
 // Helper to get a tool by slug
 export function getToolBySlug(slug: string): ToolPricing | undefined {
   return TOOLS[slug];

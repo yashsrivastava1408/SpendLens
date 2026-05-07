@@ -9,6 +9,7 @@ import {
   CREDEX_DISCOUNT_AVG,
   SAVINGS_TIER_HIGH,
   SAVINGS_TIER_MEDIUM,
+  getBenchmarkForTeamSize,
   type PlanInfo,
 } from './pricing-data';
 
@@ -49,6 +50,13 @@ export interface AuditResult {
   totalAnnualSavings: number;
   savingsTier: 'high' | 'medium' | 'low' | 'optimal';
   credexTotalEstimate: number;
+  teamSize: number;
+  benchmarkData: {
+    userSpendPerSeat: number;
+    industryBenchmark: number;
+    percentDifference: number;
+    status: 'above' | 'below' | 'average';
+  };
 }
 
 // ─── Core Logic ──────────────────────────────────────────────────
@@ -329,6 +337,18 @@ export function runAudit(tools: ToolInput[], context: AuditContext): AuditResult
     (sum, t) => sum + t.credexSavingsEstimate, 0
   );
 
+  const userSpendPerSeat = context.teamSize > 0 
+    ? totalCurrentMonthlySpend / context.teamSize 
+    : 0;
+  const industryBenchmark = getBenchmarkForTeamSize(context.teamSize);
+  const percentDifference = industryBenchmark > 0 
+    ? ((userSpendPerSeat - industryBenchmark) / industryBenchmark) * 100 
+    : 0;
+
+  let status: 'above' | 'below' | 'average' = 'average';
+  if (percentDifference > 10) status = 'above';
+  else if (percentDifference < -10) status = 'below';
+
   return {
     tools: toolResults,
     totalCurrentMonthlySpend,
@@ -336,6 +356,13 @@ export function runAudit(tools: ToolInput[], context: AuditContext): AuditResult
     totalAnnualSavings,
     savingsTier: getSavingsTier(totalMonthlySavings),
     credexTotalEstimate,
+    teamSize: context.teamSize,
+    benchmarkData: {
+      userSpendPerSeat,
+      industryBenchmark,
+      percentDifference,
+      status,
+    },
   };
 }
 

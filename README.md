@@ -29,3 +29,17 @@ npm test
 
 ## Live URL
 [spendlens.vercel.app](https://spendlens.vercel.app)
+
+## Embeddable Widget
+
+You can embed the SpendLens audit tool on your own blog or site using the following iframe:
+
+```html
+<iframe 
+  src="https://spendlens.vercel.app/widget" 
+  width="100%" 
+  height="600" 
+  style="border:none; border-radius:12px; overflow:hidden;"
+  title="SpendLens AI Audit Widget"
+></iframe>
+```
