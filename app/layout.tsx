@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { Outfit } from "next/font/google";
+import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
 
-const outfit = Outfit({
+const spaceGrotesk = Space_Grotesk({
   variable: "--font-sans",
   subsets: ["latin"],
 });
@@ -42,7 +42,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${outfit.variable} h-full antialiased dark`}>
+    <html lang="en" className={`${spaceGrotesk.variable} h-full antialiased dark`}>
       <body className="min-h-full flex flex-col relative bg-background overflow-x-hidden text-foreground">
         {/* Animated Aurora Background */}
         <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
