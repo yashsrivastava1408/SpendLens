@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
+import SplashScreen from "@/components/SplashScreen";
 
 export default function LandingPage() {
   return (
     <div className="min-h-screen">
+      <SplashScreen />
       {/* Nav */}
       <nav className="sticky top-0 z-50 glass border-b border-border/20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">

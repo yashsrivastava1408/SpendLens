@@ -192,6 +192,10 @@
   .animation-delay-4000 {
     animation-delay: 4s;
   }
+
+  .animate-loading-bar {
+    animation: loadingBar 2s ease-in-out forwards;
+  }
 }
 
 @keyframes fadeIn {
@@ -232,6 +236,12 @@
   33% { transform: translate(30px, -50px) scale(1.1); }
   66% { transform: translate(-20px, 20px) scale(0.9); }
   100% { transform: translate(0px, 0px) scale(1); }
+}
+
+@keyframes loadingBar {
+  0% { width: 0%; opacity: 0.5; }
+  80% { width: 100%; opacity: 1; }
+  100% { width: 100%; opacity: 0; }
 }
 
 /* Scrollbar styling */
